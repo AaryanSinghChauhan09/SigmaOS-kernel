@@ -8,26 +8,33 @@
 //! - FAIL-FAST: Early error detection and reporting
 //! - DETERMINISTIC TESTING: Comprehensive test coverage
 
-#![no_std] // Core kernel runs without standard library
 #![allow(dead_code)]
-#![feature(alloc_error_handler)]
-#![feature(panic_info_message)]
 
-extern crate alloc;
+// Core kernel modules (flat structure for MINIMAL KERNEL PHILOSOPHY)
+// Temporarily commented out modules with klib dependencies
+pub mod architecture;
+// pub mod scheduler;
+// pub mod process;
+// pub mod thread;
+// pub mod signal;
+// pub mod memory;
+// pub mod syscall;
+// pub mod interrupt;
+// pub mod boot_foundations;
+// pub mod boot_to_userspace;
+// pub mod panic_handler;
+// pub mod timekeeping;
+// pub mod timer_subsystem;
+// pub mod cgroups;
+// pub mod cgroup_v2;
+// pub mod namespaces;
+// pub mod capabilities;
+// pub mod seccomp;
+// pub mod security;
 
-pub mod arch;
-pub mod boot;
-pub mod interrupt;
-pub mod kernel;
-pub mod memory;
-pub mod process;
-pub mod scheduler;
-pub mod signal;
-pub mod syscall;
-pub mod thread;
+// Core architecture-specific modules
+pub mod core;
 
 // Re-export key kernel interfaces for other repositories
-pub use arch::Arch;
-pub use memory::PhysicalMemoryManager;
-pub use scheduler::Scheduler;
-pub use syscall::SyscallDispatcher;
+// Commented out until compilation issues are resolved
+// pub use architecture::Architecture;
