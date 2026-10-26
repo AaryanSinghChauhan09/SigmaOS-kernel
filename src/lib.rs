@@ -11,29 +11,33 @@
 #![allow(dead_code)]
 
 // Core kernel modules (flat structure for MINIMAL KERNEL PHILOSOPHY)
-// Temporarily commented out modules with klib dependencies
+// Restoring modules with klib dependencies
 pub mod architecture;
-// pub mod scheduler;
-// pub mod process;
-// pub mod thread;
-// pub mod signal;
-// pub mod memory;
-// pub mod syscall;
-// pub mod interrupt;
-// pub mod boot_foundations;
-// pub mod boot_to_userspace;
-// pub mod panic_handler;
-// pub mod timekeeping;
-// pub mod timer_subsystem;
-// pub mod cgroups;
-// pub mod cgroup_v2;
-// pub mod namespaces;
-// pub mod capabilities;
-// pub mod seccomp;
-// pub mod security;
+pub mod scheduler;
+pub mod process;
+pub mod thread;
+pub mod signal;
+pub mod memory;
+pub mod syscall;
+pub mod interrupt;
+pub mod boot_foundations;
+pub mod boot_to_userspace;
+pub mod panic_handler;
+pub mod timekeeping;
+pub mod timer_subsystem;
+pub mod cgroups;
+pub mod cgroup_v2;
+pub mod namespaces;
+pub mod capabilities;
+pub mod seccomp;
+pub mod security;
+pub mod tss_ring3_user_mode;
 
 // Core architecture-specific modules
 pub mod core;
+
+// External dependencies
+extern crate sigmaos_klib as klib;
 
 // Re-export key kernel interfaces for other repositories
 // Commented out until compilation issues are resolved

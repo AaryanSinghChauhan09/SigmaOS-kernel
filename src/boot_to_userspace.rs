@@ -717,18 +717,32 @@ impl Ring3TransitionManager {
         }
 
         // Use the TSS module to perform the transition
-        use crate::arch::x86_64::tss_ring3_user_mode::{setup_user_mode, UserModeContext};
-        
-        setup_user_mode(self.user_stack_base, self.user_stack_size, self.entry_point);
-        
-        if let Some(ctx) = crate::arch::x86_64::tss_ring3_user_mode::get_user_context_mut() {
-            let result = ctx.transition_to_ring3_iretq();
-            if result.is_ok() {
+        use crate::tss_ring3_user_mode::{SovereignRing3UserModeEngine, SecuritySandboxLevel};
+
+        // Create engine
+        let mut engine = SovereignRing3UserModeEngine::new();
+
+        // Register user process with all required parameters
+        engine.register_user_process(
+            1,              // PID
+            0,              // PPID (0 for init)
+            0,              // user_cr3 (page table, 0 for now)
+            0,              // kernel_cr3 (page table, 0 for now)
+            0,              // kernel_stack (0 for now)
+            self.user_stack_base + self.user_stack_size, // user_stack
+            self.entry_point, // entry point
+            SecuritySandboxLevel::None, // security level
+        );
+
+        // Prepare ring 3 transition
+        let stack_frame = engine.prepare_ring3_transition(1);
+
+        match stack_frame {
+            Ok(_frame) => {
                 self.transition_complete = true;
+                Ok(())
             }
-            result
-        } else {
-            Err("User context not initialized")
+            Err(e) => Err(e),
         }
     }
 }

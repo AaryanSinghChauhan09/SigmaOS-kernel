@@ -3,13 +3,20 @@
 
 use core::ptr::NonNull;
 use core::sync::atomic::{AtomicUsize, Ordering};
-use std::string::String;
-use std::vec::Vec;
 
-#[cfg(not(test))]
-use crate::klib::HashMap;
-#[cfg(test)]
+#[cfg(feature = "std")]
+use std::string::String;
+#[cfg(feature = "std")]
+use std::vec::Vec;
+#[cfg(feature = "std")]
 use std::collections::HashMap;
+
+#[cfg(not(feature = "std"))]
+use klib::SigmaString as String;
+#[cfg(not(feature = "std"))]
+use klib::Vec;
+#[cfg(not(feature = "std"))]
+use klib::HashMap;
 
 // Explicit #[path] on sigma_buddy works around a rustfmt resolution quirk:
 // after one sibling mod carries an explicit #[path], rustfmt resolves later

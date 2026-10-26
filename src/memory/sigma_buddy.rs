@@ -30,7 +30,6 @@ use alloc::vec::Vec;
 use std::vec;
 
 use super::{MemoryBlock, PAGE_SIZE};
-use crate::klib::buddy_allocator::{BuddyAllocator, SimpleBuddyAllocator};
 
 /// Linux-inspired Page Migration Types for Anti-Fragmentation Buddy Allocator
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -376,7 +375,7 @@ impl SovereignIpcBuffer {
 }
 
 pub struct SigmaBuddyAllocator {
-    pub inner: SimpleBuddyAllocator,
+    // pub inner: SimpleBuddyAllocator,
     pub base_addr: usize,
     pub total_size: usize,
     pub allocated: AtomicUsize,
@@ -390,7 +389,7 @@ impl SigmaBuddyAllocator {
     pub fn new(base_addr: usize, total_size: usize, max_order: usize) -> Self {
         let total_pages = total_size / PAGE_SIZE;
         SigmaBuddyAllocator {
-            inner: SimpleBuddyAllocator::new(max_order, total_pages),
+            // inner: SimpleBuddyAllocator::new(max_order, total_pages),
             base_addr,
             total_size,
             allocated: AtomicUsize::new(0),
@@ -405,7 +404,7 @@ impl SigmaBuddyAllocator {
     }
 
     pub fn init(&mut self) {
-        self.inner = SimpleBuddyAllocator::new(10, self.total_size / PAGE_SIZE);
+        // self.inner = SimpleBuddyAllocator::new(10, self.total_size / PAGE_SIZE);
     }
 
     /// Allocates memory block with specified Linux migration type
@@ -443,25 +442,26 @@ impl SigmaBuddyAllocator {
         }
         let pages = size.div_ceil(PAGE_SIZE);
         let order = Self::calculate_order(pages);
-        match self.inner.allocate(order) {
-            Ok(block_id) => {
-                let addr = self.base_addr + (block_id * PAGE_SIZE);
-                let actual_size = (1 << order) * PAGE_SIZE;
-                self.allocated.fetch_add(actual_size, Ordering::SeqCst);
+        // match self.inner.allocate(order) {
+        //     Ok(block_id) => {
+        //         let addr = self.base_addr + (block_id * PAGE_SIZE);
+        //         let actual_size = (1 << order) * PAGE_SIZE;
+        //         self.allocated.fetch_add(actual_size, Ordering::SeqCst);
 
-                if let Some(ref zone) = self.bsd_zone {
-                    let _ =
-                        zone.transition_queue(PageQueueType::Free, PageQueueType::Active, pages);
-                }
+        //         if let Some(ref zone) = self.bsd_zone {
+        //             let _ =
+        //                 zone.transition_queue(PageQueueType::Free, PageQueueType::Active, pages);
+        //         }
 
-                use core::ptr::NonNull;
-                NonNull::new(addr as *mut u8).map(|addr| MemoryBlock {
-                    addr,
-                    size: actual_size,
-                })
-            }
-            Err(_) => None,
-        }
+        //         use core::ptr::NonNull;
+        //         NonNull::new(addr as *mut u8).map(|addr| MemoryBlock {
+        //             addr,
+        //             size: actual_size,
+        //         })
+        //     }
+        //     Err(_) => None,
+        // }
+        None
     }
 
     pub fn free(&mut self, block: &MemoryBlock) {
@@ -489,7 +489,7 @@ impl SigmaBuddyAllocator {
 
         let block_id = (addr - self.base_addr) / PAGE_SIZE;
         let order = Self::calculate_order(pages);
-        let _ = self.inner.free(block_id, order);
+        // let _ = self.inner.free(block_id, order);
         self.allocated.fetch_sub(block.size, Ordering::SeqCst);
 
         if let Some(ref zone) = self.bsd_zone {
@@ -549,7 +549,7 @@ impl SigmaBuddyAllocator {
 impl Default for SigmaBuddyAllocator {
     fn default() -> Self {
         Self {
-            inner: SimpleBuddyAllocator::new(10, 1024),
+            // inner: SimpleBuddyAllocator::new(10, 1024),
             base_addr: 0,
             total_size: 0,
             allocated: AtomicUsize::new(0),

@@ -14,6 +14,7 @@ categories = ["os", "no-std"]
 # Core dependencies (MINIMAL DEPENDENCIES, YAGNI)
 spin = "0.9"
 volatile = "0.5"
+sigmaos-klib = { path = "../SigmaOS-klib" }
 
 [features]
 default = ["std"]
