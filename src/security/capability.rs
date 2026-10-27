@@ -65,6 +65,7 @@ pub struct CapabilityManager {
     pub token_count: u32,
 }
 
+#[allow(clippy::new_without_default)]
 impl CapabilityManager {
     pub fn new() -> Self {
         CapabilityManager {
@@ -73,6 +74,7 @@ impl CapabilityManager {
         }
     }
 
+    #[allow(clippy::result_unit_err)]
     pub fn grant_token(&mut self, token: CapabilityToken) -> Result<u64, ()> {
         if (self.token_count as usize) < MAX_CAPABILITY_TOKENS {
             self.tokens[self.token_count as usize] = token;

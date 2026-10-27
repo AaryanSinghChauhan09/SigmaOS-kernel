@@ -286,7 +286,7 @@ impl LinuxPanicNotifierChain {
             .map(|(&id, (name, prio))| (id, name.clone(), *prio))
             .collect();
 
-        sorted.sort_by(|a, b| b.2.cmp(&a.2)); // Highest priority first
+        sorted.sort_by_key(|a| std::cmp::Reverse(a.2)); // Highest priority first
 
         self.triggered_order.clear();
         for (_, name, _) in sorted {
@@ -515,6 +515,7 @@ static PANIC_COUNT: AtomicU64 = AtomicU64::new(0);
 
 pub struct PanicHandler {
     log: PanicLog,
+    #[allow(clippy::type_complexity)]
     output: Option<Box<dyn Fn(&str)>>,
 }
 
@@ -648,12 +649,17 @@ impl PanicHandler {
             offset: 0x42,
         });
 
-        for i in 1..depth.min(kernel_functions.len()) {
+        for (i, fn_name) in kernel_functions
+            .iter()
+            .enumerate()
+            .take(depth.min(kernel_functions.len()))
+            .skip(1)
+        {
             frames.push(StackFrame {
                 frame_number: i,
                 return_address: 0xFFFFFFFF80001000 + (i as u64 * 0x100),
                 frame_pointer: 0xFFFFFFFF80100000 - (i as u64 * 0x1000),
-                function_name: Some(kernel_functions[i].to_string()),
+                function_name: Some(fn_name.to_string()),
                 offset: 0x10 + (i as u64 * 0x8),
             });
         }
@@ -749,10 +755,12 @@ mod tests {
 
     #[test]
     fn test_register_dump_format() {
-        let mut regs = CpuRegisterDump::default();
-        regs.rax = 0xDEADBEEF;
-        regs.rip = 0xFFFFFFFF80001234;
-        regs.rflags = 0x202; // IF set
+        let regs = CpuRegisterDump {
+            rax: 0xDEADBEEF,
+            rip: 0xFFFFFFFF80001234,
+            rflags: 0x202,
+            ..Default::default()
+        };
         let dump = regs.format_dump();
         assert!(dump.contains("DEADBEEF"));
         assert!(dump.contains("80001234"));
@@ -760,8 +768,10 @@ mod tests {
 
     #[test]
     fn test_rflags_decode() {
-        let mut regs = CpuRegisterDump::default();
-        regs.rflags = (1 << 9) | (1 << 6); // IF + ZF
+        let regs = CpuRegisterDump {
+            rflags: (1 << 9) | (1 << 6), // IF + ZF
+            ..Default::default()
+        };
         let decoded = regs.decode_rflags();
         assert!(decoded.contains("IF"));
         assert!(decoded.contains("ZF"));

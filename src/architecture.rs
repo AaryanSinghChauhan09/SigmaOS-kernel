@@ -228,6 +228,7 @@ pub struct X86_32Hal {
     pub cr3: u32,
 }
 
+#[allow(clippy::new_without_default)]
 impl X86_32Hal {
     pub fn new() -> Self {
         Self {
@@ -260,6 +261,7 @@ pub struct X86_64Hal {
     pub efer: u64,
 }
 
+#[allow(clippy::new_without_default)]
 impl X86_64Hal {
     pub fn new() -> Self {
         Self {
@@ -293,6 +295,7 @@ pub struct AArch64Hal {
     pub sctlr_el1: u64, // System Control Register EL1
 }
 
+#[allow(clippy::new_without_default)]
 impl AArch64Hal {
     pub fn new() -> Self {
         Self {
@@ -325,6 +328,7 @@ pub struct RiscV32Hal {
     pub sstatus: u32,
 }
 
+#[allow(clippy::new_without_default)]
 impl RiscV32Hal {
     pub fn new() -> Self {
         Self {
@@ -356,6 +360,7 @@ pub struct RiscV64Hal {
     pub sstatus: u64,    // Supervisor Status Register
 }
 
+#[allow(clippy::new_without_default)]
 impl RiscV64Hal {
     pub fn new() -> Self {
         Self {
@@ -459,6 +464,7 @@ pub struct LoongArch64Hal {
     pub pwcl_base: u64,
 }
 
+#[allow(clippy::new_without_default)]
 impl LoongArch64Hal {
     pub fn new() -> Self {
         Self {
@@ -487,6 +493,7 @@ pub struct PowerPC64Hal {
     pub msr: u64,
 }
 
+#[allow(clippy::new_without_default)]
 impl PowerPC64Hal {
     pub fn new() -> Self {
         Self {
@@ -514,6 +521,7 @@ pub struct S390xHal {
     pub control_reg13: u64,
 }
 
+#[allow(clippy::new_without_default)]
 impl S390xHal {
     pub fn new() -> Self {
         Self {
@@ -555,7 +563,7 @@ impl MemoryDescriptorList {
     /// Locks virtual buffer into physical pages (Standard Linux/Windows VMM behavior)
     pub fn lock_pages(&mut self) {
         let page_size = 4096;
-        let num_pages = (self.byte_count + page_size - 1) / page_size;
+        let num_pages = self.byte_count.div_ceil(page_size);
         self.locked_physical_pages.clear();
         for i in 0..num_pages {
             // Map virtual page to a simulated physical page Frame Number (PFN)
@@ -586,9 +594,11 @@ pub struct Tcb {
 
 impl Tcb {
     pub fn new(thread_id: usize, parent_process_id: usize, rip: u64, rsp: u64) -> Self {
-        let mut registers = CpuRegisters::default();
-        registers.rip = rip;
-        registers.rsp = rsp;
+        let registers = CpuRegisters {
+            rip,
+            rsp,
+            ..Default::default()
+        };
         Self {
             thread_id,
             parent_process_id,
@@ -628,6 +638,7 @@ pub struct SystemServiceDescriptorTable {
     pub service_table: Vec<Option<SyscallHandler>>,
 }
 
+#[allow(clippy::new_without_default)]
 impl SystemServiceDescriptorTable {
     pub fn new() -> Self {
         let mut service_table = Vec::new();
@@ -669,6 +680,7 @@ pub struct ArchitectureEngine {
     pub running_pcb: Option<Pcb>,
 }
 
+#[allow(clippy::new_without_default)]
 impl ArchitectureEngine {
     pub fn new() -> Self {
         Self {

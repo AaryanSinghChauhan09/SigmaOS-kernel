@@ -86,7 +86,7 @@ impl SlabObjectCacheAllocator {
             return Err("SlabAllocator: Address out of slab cache bounds");
         }
 
-        if (addr - self.base_address) % self.object_size != 0 {
+        if !(addr - self.base_address).is_multiple_of(self.object_size) {
             return Err("SlabAllocator: Unaligned object address for slab size class");
         }
 

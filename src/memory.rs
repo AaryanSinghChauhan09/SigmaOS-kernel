@@ -198,8 +198,8 @@ impl BuddyAllocator {
     /// Create a checkpoint of the allocator's current free list state (Phase 1.1)
     pub fn create_checkpoint(&self) -> [Vec<MemoryBlock>; 12] {
         let mut checkpoint: [Vec<MemoryBlock>; 12] = Default::default();
-        for order in 0..12 {
-            for block in &self.free_lists[order] {
+        for (order, free_list) in self.free_lists.iter().enumerate() {
+            for block in free_list {
                 checkpoint[order].push(*block);
             }
         }

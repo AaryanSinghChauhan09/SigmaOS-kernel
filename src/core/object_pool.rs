@@ -12,6 +12,7 @@ pub struct FixedObjectPool<T, const N: usize> {
     entries: [ObjectPoolEntry<T, N>; N],
 }
 
+#[allow(clippy::new_without_default)]
 impl<T: Default, const N: usize> FixedObjectPool<T, N> {
     pub fn new() -> Self {
         // Initialize pool array safely
@@ -24,6 +25,7 @@ impl<T: Default, const N: usize> FixedObjectPool<T, N> {
 
     pub fn acquire(&self) -> Option<(usize, &T)> {
         for (idx, entry) in self.entries.iter().enumerate() {
+            #[allow(clippy::collapsible_if)]
             if !entry.active.load(Ordering::SeqCst) {
                 if entry
                     .active

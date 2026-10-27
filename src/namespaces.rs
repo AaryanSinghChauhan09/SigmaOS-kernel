@@ -169,6 +169,7 @@ pub struct NamespaceManager {
     initial_namespaces: HashMap<NamespaceType, NamespaceId>,
 }
 
+#[allow(clippy::new_without_default)]
 impl NamespaceManager {
     pub fn new() -> Self {
         let mut manager = Self {

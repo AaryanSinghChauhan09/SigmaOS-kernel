@@ -60,6 +60,7 @@ pub struct InterruptController {
     interrupt_count: AtomicU64,
 }
 
+#[allow(clippy::new_without_default)]
 impl InterruptController {
     pub fn new() -> Self {
         Self {

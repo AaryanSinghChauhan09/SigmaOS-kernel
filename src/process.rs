@@ -131,6 +131,7 @@ pub struct ResourceLimits {
     limits: [ResourceLimit; 10],
 }
 
+#[allow(clippy::should_implement_trait)]
 impl ResourceLimits {
     pub fn default() -> Self {
         Self {
@@ -255,6 +256,7 @@ pub struct ProcessStats {
     pub rss_pages: AtomicU64,            // Resident set size in pages
 }
 
+#[allow(clippy::new_without_default)]
 impl ProcessStats {
     pub const fn new() -> Self {
         Self {
@@ -345,6 +347,7 @@ pub struct ProcessTable {
     processes: Vec<Process>,
 }
 
+#[allow(clippy::new_without_default)]
 impl ProcessTable {
     pub const fn new() -> Self {
         Self {

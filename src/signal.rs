@@ -151,6 +151,7 @@ pub struct SignalQueue {
     pending: AtomicU64,
 }
 
+#[allow(clippy::new_without_default)]
 impl SignalQueue {
     pub fn new() -> Self {
         Self {
@@ -220,6 +221,7 @@ pub struct ProcessSignalState {
     pub queue: SignalQueue,
 }
 
+#[allow(clippy::new_without_default)]
 impl ProcessSignalState {
     pub fn new() -> Self {
         Self {

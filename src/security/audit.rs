@@ -25,6 +25,7 @@ pub struct CapabilityAuditLogger {
     log_count: usize,
 }
 
+#[allow(clippy::new_without_default)]
 impl CapabilityAuditLogger {
     pub fn new() -> Self {
         CapabilityAuditLogger {

@@ -126,6 +126,7 @@ pub struct SecureBootEngine {
     pub measured_log: Vec<String>,
 }
 
+#[allow(clippy::new_without_default)]
 impl SecureBootEngine {
     pub fn new() -> Self {
         Self {
@@ -281,6 +282,7 @@ pub struct InitramfsUnpacker {
     pub files: BTreeMap<String, InitramfsFile>,
 }
 
+#[allow(clippy::new_without_default)]
 impl InitramfsUnpacker {
     pub fn new() -> Self {
         Self {
@@ -354,6 +356,7 @@ pub struct SmpCpuTopologyManager {
     pub active_cpus_count: usize,
 }
 
+#[allow(clippy::new_without_default)]
 impl SmpCpuTopologyManager {
     pub fn new() -> Self {
         Self {
@@ -418,6 +421,7 @@ pub struct InterruptControllerManager {
     pub interrupts_enabled: bool,
 }
 
+#[allow(clippy::new_without_default)]
 impl InterruptControllerManager {
     pub fn new() -> Self {
         Self {
@@ -460,6 +464,7 @@ pub struct SystemClockTimer {
     pub hpet_base_addr: u64,
 }
 
+#[allow(clippy::new_without_default)]
 impl SystemClockTimer {
     pub fn new() -> Self {
         Self {
@@ -506,6 +511,7 @@ pub struct AddressSpaceSeparationManager {
     pub mapped_kernel_pages: BTreeMap<u64, u64>,
 }
 
+#[allow(clippy::new_without_default)]
 impl AddressSpaceSeparationManager {
     pub fn new() -> Self {
         Self {
@@ -617,28 +623,27 @@ impl Elf64Loader {
 
         // Mock ELF header extraction
         let entry_point = 0x0000_0000_0040_0000u64;
-        let mut segments = Vec::new();
-
-        // Code segment
-        segments.push(Elf64Segment {
-            vaddr: 0x0000_0000_0040_0000,
-            memsz: 0x1000,
-            filesz: 0x1000,
-            flags: PF_R | PF_X,
-            data: elf_data
-                .get(0..core::cmp::min(0x1000, elf_data.len()))
-                .unwrap_or(&[])
-                .to_vec(),
-        });
-
-        // Data segment
-        segments.push(Elf64Segment {
-            vaddr: 0x0000_0000_0040_1000,
-            memsz: 0x1000,
-            filesz: 0x1000,
-            flags: PF_R | PF_W,
-            data: alloc::vec![0u8; 0x1000],
-        });
+        let segments = vec![
+            // Code segment
+            Elf64Segment {
+                vaddr: 0x0000_0000_0040_0000,
+                memsz: 0x1000,
+                filesz: 0x1000,
+                flags: PF_R | PF_X,
+                data: elf_data
+                    .get(0..core::cmp::min(0x1000, elf_data.len()))
+                    .unwrap_or(&[])
+                    .to_vec(),
+            },
+            // Data segment
+            Elf64Segment {
+                vaddr: 0x0000_0000_0040_1000,
+                memsz: 0x1000,
+                filesz: 0x1000,
+                flags: PF_R | PF_W,
+                data: alloc::vec![0u8; 0x1000],
+            },
+        ];
 
         Ok(Self {
             entry_point,
@@ -653,19 +658,20 @@ impl Elf64Loader {
         _args: &[&str],
         _envs: &[&str],
     ) -> (u64, Vec<AuxVectorEntry>) {
-        let mut auxv = Vec::new();
-        auxv.push(AuxVectorEntry {
-            key: AT_ENTRY,
-            val: self.entry_point,
-        });
-        auxv.push(AuxVectorEntry {
-            key: AT_PAGESZ,
-            val: 4096,
-        });
-        auxv.push(AuxVectorEntry {
-            key: AT_PHNUM,
-            val: self.segments.len() as u64,
-        });
+        let auxv = vec![
+            AuxVectorEntry {
+                key: AT_ENTRY,
+                val: self.entry_point,
+            },
+            AuxVectorEntry {
+                key: AT_PAGESZ,
+                val: 4096,
+            },
+            AuxVectorEntry {
+                key: AT_PHNUM,
+                val: self.segments.len() as u64,
+            },
+        ];
 
         let rsp = stack_top - 0x100;
         (rsp, auxv)
@@ -714,6 +720,15 @@ impl Ring3TransitionManager {
     }
 
     /// Execute Ring 3 transition using iretq
+    ///
+    /// # Safety
+    /// This function performs a privilege level transition from Ring 0 (kernel) to Ring 3 (user).
+    /// The caller must ensure:
+    /// - The user stack is properly initialized and accessible
+    /// - The entry point is a valid user-space address
+    /// - Page tables are correctly configured for user-space access
+    /// - The transition is only performed once per process
+    /// - All kernel state is properly saved before the transition
     pub unsafe fn transition_to_ring3(&mut self) -> Result<(), &'static str> {
         if self.transition_complete {
             return Err("Already transitioned to Ring 3");
@@ -785,6 +800,7 @@ pub struct SyscallDispatcher {
     pub total_syscalls_dispatched: AtomicU64,
 }
 
+#[allow(clippy::new_without_default)]
 impl SyscallDispatcher {
     pub fn new() -> Self {
         Self {
@@ -1032,6 +1048,7 @@ pub struct KernelPanicRecoveryEngine {
     pub recovery_attempts: AtomicUsize,
 }
 
+#[allow(clippy::new_without_default)]
 impl KernelPanicRecoveryEngine {
     pub fn new() -> Self {
         Self {
@@ -1086,6 +1103,7 @@ pub struct StaticDriverModuleRegistry {
     pub drivers: BTreeMap<String, StaticDriverDescriptor>,
 }
 
+#[allow(clippy::new_without_default)]
 impl StaticDriverModuleRegistry {
     pub fn new() -> Self {
         Self {

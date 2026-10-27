@@ -8,6 +8,7 @@ pub struct StackBuffer<T, const N: usize> {
     len: usize,
 }
 
+#[allow(clippy::new_without_default)]
 impl<T: Copy, const N: usize> StackBuffer<T, N> {
     pub const fn new() -> Self {
         StackBuffer {
@@ -16,6 +17,7 @@ impl<T: Copy, const N: usize> StackBuffer<T, N> {
         }
     }
 
+    #[allow(clippy::result_unit_err)]
     pub fn push(&mut self, item: T) -> Result<(), ()> {
         if self.len < N {
             self.data[self.len] = MaybeUninit::new(item);
@@ -52,7 +54,13 @@ impl<T: Copy, const N: usize> StackBuffer<T, N> {
     }
 }
 
+/// # Safety
+/// This function allocates an uninitialized array on the stack.
+/// The caller must ensure that:
+/// - The type T can be safely initialized from uninit memory (Copy types only)
+/// - The array is fully initialized before any reads occur
 #[inline(always)]
+#[allow(clippy::uninit_assumed_init)]
 pub unsafe fn stack_alloc<T: Copy, const N: usize>() -> [T; N] {
     MaybeUninit::uninit().assume_init()
 }

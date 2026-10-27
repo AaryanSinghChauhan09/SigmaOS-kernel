@@ -469,6 +469,7 @@ impl ThreadManager {
     pub fn wake_wait_channel(&mut self, wchan: WaitChannelId) -> usize {
         let mut woken = 0;
         for t in self.threads.iter_mut() {
+            #[allow(clippy::collapsible_if)]
             if t.state == ThreadState::Blocked && t.wait_channel == Some(wchan) {
                 if t.wake().is_ok() {
                     woken += 1;
