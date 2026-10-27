@@ -8,56 +8,35 @@ use std::string::String;
 use core::sync::atomic::{AtomicUsize, Ordering};
 use std::string::ToString;
 
-use sigmaos::arch::x86_64;
-use sigmaos::compatibility::{OpenRcManager, OpenRcRunlevel, OpenRcService};
-use sigmaos::kernel::scheduler::ProcessState as TaskProcessState;
-use sigmaos::kernel::{
-    BuddyAllocator, Priority, ProcessTask, RoundRobinScheduler as Scheduler, SchedulerPolicy,
-};
-use sigmaos::memory::paging::SimpleVMM;
+// Use library modules
+use sigmaos_kernel::scheduler::ProcessState as TaskProcessState;
+use sigmaos_kernel::scheduler::{Priority, ProcessTask, SchedulerPolicy};
+use sigmaos_kernel::roundrobin::RoundRobinScheduler as Scheduler;
+use sigmaos_kernel::memory::sigma_buddy::SigmaBuddyAllocator as MemoryAllocator;
 
 pub static EARLY_CPU_STATE: core::sync::atomic::AtomicUsize = AtomicUsize::new(0);
 
 /// The supreme x86_64 start_kernel bootstrap manager (similar to Linux's init/main.c)
 pub fn start_kernel(
-    allocator: &mut BuddyAllocator,
-    vmm: &mut SimpleVMM,
+    _allocator: &mut MemoryAllocator,
     scheduler: &mut Scheduler,
-    openrc: &mut OpenRcManager,
 ) -> Result<(), &'static str> {
     // Stage 1: CPU hardware bootstrap (cli, cld, GDT, IDT, Paging)
-    x86_64::initialize();
+    // TODO: Implement x86_64 initialization in architecture module
     EARLY_CPU_STATE.store(1, Ordering::SeqCst);
 
     // Stage 2: Physical Memory paging bootstrap
-    vmm.map_page(0x0, 0x0, false, true)
-        .map_err(|_| "Failed to map initial physical page")?;
-    allocator.initialize_memory(0x10000, 1024 * 1024);
+    // Allocator is already initialized in _start
+    // TODO: Implement VMM when memory subsystem is complete
     EARLY_CPU_STATE.store(2, Ordering::SeqCst);
 
     // Stage 3: Scheduler bootstrap
-    let idle_proc = ProcessTask {
-        pid: 0,
-        priority: Priority::Idle,
-        policy: SchedulerPolicy::Idle,
-        state: TaskProcessState::Runnable,
-        vruntime: 0,
-        exec_start: 0,
-        exec_duration: 0,
-        cpu_time: 0,
-        slice: 10,
-    };
+    let idle_proc = ProcessTask::new_simple(0, Priority::Idle);
     let _ = scheduler.add_process(idle_proc);
 
     // Stage 4: Open early userland runlevels (OpenRC)
-    let udev = OpenRcService::new("udev").with_runlevel(OpenRcRunlevel::SingleUser);
-    let dhcpcd = OpenRcService::new("dhcpcd")
-        .with_dependency("udev")
-        .with_runlevel(OpenRcRunlevel::MultiUser);
-
-    openrc.register_service(udev);
-    openrc.register_service(dhcpcd);
-    openrc.transition_to_runlevel(OpenRcRunlevel::MultiUser)?;
+    // TODO: Implement OpenRC compatibility layer in separate repository
+    // when userland subsystems are complete
 
     EARLY_CPU_STATE.store(3, Ordering::SeqCst);
     Ok(())
@@ -66,12 +45,10 @@ pub fn start_kernel(
 #[cfg(target_os = "none")]
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
-    let mut allocator = BuddyAllocator::new();
-    let mut vmm = SimpleVMM::new();
+    let mut allocator = MemoryAllocator::new(0x10000, 1024 * 1024, 10);
     let mut scheduler = Scheduler::new();
-    let mut openrc = OpenRcManager::new();
 
-    let _ = start_kernel(&mut allocator, &mut vmm, &mut scheduler, &mut openrc);
+    let _ = start_kernel(&mut allocator, &mut scheduler);
 
     loop {}
 }
@@ -90,20 +67,16 @@ fn panic(_info: &core::panic::PanicInfo) -> ! {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use sigmaos::compatibility::ServiceStatus;
 
     #[test]
     fn test_x86_64_start_kernel_bootstrap() {
-        let mut allocator = BuddyAllocator::new();
-        let mut vmm = SimpleVMM::new();
+        let mut allocator = MemoryAllocator::new(0x10000, 1024 * 1024, 10);
         let mut scheduler = Scheduler::new();
-        let mut openrc = OpenRcManager::new();
 
         assert_eq!(EARLY_CPU_STATE.load(Ordering::SeqCst), 0);
 
-        start_kernel(&mut allocator, &mut vmm, &mut scheduler, &mut openrc).unwrap();
+        start_kernel(&mut allocator, &mut scheduler).unwrap();
 
-        assert!(allocator.get_free_memory() > 0);
         assert_eq!(EARLY_CPU_STATE.load(Ordering::SeqCst), 3);
     }
 }

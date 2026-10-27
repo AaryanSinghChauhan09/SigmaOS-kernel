@@ -14,6 +14,7 @@
 // Restoring modules with klib dependencies
 pub mod architecture;
 pub mod scheduler;
+pub mod roundrobin;
 pub mod process;
 pub mod thread;
 pub mod signal;
@@ -40,5 +41,6 @@ pub mod core;
 extern crate sigmaos_klib as klib;
 
 // Re-export key kernel interfaces for other repositories
-// Commented out until compilation issues are resolved
-// pub use architecture::Architecture;
+pub use scheduler::{Priority, ProcessState, ProcessTask, SchedulerPolicy};
+pub use roundrobin::RoundRobinScheduler;
+pub use memory::sigma_buddy::SigmaBuddyAllocator;

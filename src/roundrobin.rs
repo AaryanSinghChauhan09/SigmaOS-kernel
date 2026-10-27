@@ -1,7 +1,7 @@
 // SigmaOS Round-Robin Scheduler
 // Enhanced priority-aware round-robin with process yielding and context tracking
 
-use crate::kernel::scheduler::{Priority, ProcessState, ProcessTask};
+use crate::scheduler::{Priority, ProcessState, ProcessTask};
 use std::string::String;
 use std::vec::Vec;
 
