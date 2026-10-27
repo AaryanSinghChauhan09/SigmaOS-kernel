@@ -31,7 +31,7 @@ pub fn start_kernel(
     EARLY_CPU_STATE.store(2, Ordering::SeqCst);
 
     // Stage 3: Scheduler bootstrap
-    let idle_proc = ProcessTask::new_simple(0, Priority::Idle);
+    let idle_proc = ProcessTask::new_simple(0, Priority::IDLE);
     let _ = scheduler.add_process(idle_proc);
 
     // Stage 4: Open early userland runlevels (OpenRC)

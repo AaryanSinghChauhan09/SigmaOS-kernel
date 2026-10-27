@@ -19,20 +19,20 @@ pub struct Priority {
 
 impl Priority {
     /// Realtime priority (-20, highest)
-    pub const High: Self = Self::new_const(-20);
+    pub const HIGH: Self = Self::new_const(-20);
 
     /// Normal priority (0, default)
-    pub const Normal: Self = Self::new_const(0);
+    pub const NORMAL: Self = Self::new_const(0);
 
     /// Low priority (10)
-    pub const Low: Self = Self::new_const(10);
+    pub const LOW: Self = Self::new_const(10);
 
     /// Idle priority (19, lowest)
-    pub const Idle: Self = Self::new_const(19);
+    pub const IDLE: Self = Self::new_const(19);
 
     /// Realtime priority (-20, highest)
     #[doc(hidden)]
-    pub const Realtime: Self = Self::new_const(-20);
+    pub const REALTIME: Self = Self::new_const(-20);
 
     /// Create a priority with invariant validation for const context.
     ///
@@ -125,7 +125,7 @@ pub enum ProcessState {
 }
 
 impl ProcessState {
-    pub const Ready: Self = ProcessState::Runnable;
+    pub const READY: Self = ProcessState::Runnable;
 }
 
 /// Process task

@@ -3,8 +3,6 @@
 //! Core process control inspired by Linux task_struct and BSD proc structures.
 //! Implements process lifecycle, scheduling state, resource limits, and namespaces.
 
-#![no_std]
-
 extern crate alloc;
 use alloc::string::String;
 use alloc::vec::Vec;

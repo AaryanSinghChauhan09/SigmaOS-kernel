@@ -1166,7 +1166,7 @@ impl BootToUserspacePipeline {
 
         // Setup Ring 3 transition manager
         let entry_point = 0x0000_0000_0040_0000;
-        let mut ring3_transition = Ring3TransitionManager::new(entry_point);
+        let ring3_transition = Ring3TransitionManager::new(entry_point);
         let _ = ring3_transition.prepare_user_memory(&mut addr_space);
 
         let syscalls = SyscallDispatcher::new();

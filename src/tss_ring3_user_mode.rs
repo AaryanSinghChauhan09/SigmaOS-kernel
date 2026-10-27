@@ -170,10 +170,7 @@ impl SovereignRing3UserModeEngine {
 
         // Update process hierarchy
         if ppid != 0 {
-            self.process_hierarchy
-                .entry(ppid)
-                .or_insert_with(Vec::new)
-                .push(pid);
+            self.process_hierarchy.entry(ppid).or_default().push(pid);
         }
 
         // Set security context

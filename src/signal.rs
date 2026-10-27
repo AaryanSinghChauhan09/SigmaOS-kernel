@@ -18,8 +18,6 @@
 //! # FreeBSD Inspiration
 //! - `sys/kern/kern_sig.c` - Signal management
 
-#![cfg_attr(not(any(feature = "standalone_test", test)), no_std)]
-
 extern crate alloc;
 use alloc::collections::VecDeque;
 use core::sync::atomic::{AtomicU64, Ordering};

@@ -386,7 +386,7 @@ pub struct SigmaBuddyAllocator {
 }
 
 impl SigmaBuddyAllocator {
-    pub fn new(base_addr: usize, total_size: usize, max_order: usize) -> Self {
+    pub fn new(base_addr: usize, total_size: usize, _max_order: usize) -> Self {
         let total_pages = total_size / PAGE_SIZE;
         SigmaBuddyAllocator {
             // inner: SimpleBuddyAllocator::new(max_order, total_pages),
@@ -441,7 +441,7 @@ impl SigmaBuddyAllocator {
             return None;
         }
         let pages = size.div_ceil(PAGE_SIZE);
-        let order = Self::calculate_order(pages);
+        let _order = Self::calculate_order(pages);
         // match self.inner.allocate(order) {
         //     Ok(block_id) => {
         //         let addr = self.base_addr + (block_id * PAGE_SIZE);
@@ -487,8 +487,8 @@ impl SigmaBuddyAllocator {
             }
         }
 
-        let block_id = (addr - self.base_addr) / PAGE_SIZE;
-        let order = Self::calculate_order(pages);
+        let _block_id = (addr - self.base_addr) / PAGE_SIZE;
+        let _order = Self::calculate_order(pages);
         // let _ = self.inner.free(block_id, order);
         self.allocated.fetch_sub(block.size, Ordering::SeqCst);
 

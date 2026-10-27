@@ -5,7 +5,7 @@
 #![allow(dead_code)]
 
 use std::collections::BTreeMap;
-use std::sync::atomic::{AtomicBool, AtomicU32, AtomicU64, Ordering};
+use std::sync::atomic::{AtomicU32, AtomicU64, Ordering};
 
 /// Cgroup ID type
 pub type CgroupId = u64;
@@ -182,7 +182,7 @@ impl CgroupSubsystem {
         name: String,
         parent_id: Option<CgroupId>,
     ) -> Result<CgroupId, &'static str> {
-        let parent = match parent_id {
+        let _parent = match parent_id {
             Some(id) => self.cgroups.get(&id).ok_or("Parent cgroup not found")?,
             None => self
                 .cgroups

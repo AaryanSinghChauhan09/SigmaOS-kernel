@@ -3,21 +3,19 @@
 // Inspired by Linux timekeeping (kernel/time) and BSD timekeeping
 // Provides system time, timers, NTP synchronization, and clock sources
 
-#![no_std]
-
 extern crate alloc;
 use alloc::collections::BTreeMap;
-use alloc::string::{String, ToString};
+use alloc::string::String;
 use alloc::vec::Vec;
 use core::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 
 /// Clock source type
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ClockSource {
-    TSC,     // Time Stamp Counter
-    HPET,    // High Precision Event Timer
-    ACPI_PM, // ACPI Power Management Timer
-    PIT,     // Programmable Interval Timer
+    TSC,    // Time Stamp Counter
+    HPET,   // High Precision Event Timer
+    ACPIPm, // ACPI Power Management Timer
+    PIT,    // Programmable Interval Timer
 }
 
 /// Clock quality

@@ -6,7 +6,6 @@
 
 use std::collections::BTreeMap;
 use std::sync::atomic::{AtomicU32, AtomicU64, Ordering};
-use std::time::{Duration, Instant};
 
 /// Timer ID type
 pub type TimerId = u64;

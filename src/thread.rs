@@ -10,8 +10,6 @@
 //! - Context: CpuContext, StackMeta with bounds and guard zone checks.
 //! - Synchronization: WaitChannelId wakeups and lock-order tracking.
 
-#![no_std]
-
 extern crate alloc;
 
 use alloc::string::{String, ToString};

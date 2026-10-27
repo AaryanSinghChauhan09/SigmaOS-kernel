@@ -1,8 +1,6 @@
 // Interrupt Handling Framework
 // Inspired by Linux and BSD interrupt handling with IDT and IRQ management
 
-#![no_std]
-
 extern crate alloc;
 use alloc::collections::BTreeMap;
 use core::sync::atomic::{AtomicU32, AtomicU64, AtomicU8, Ordering};

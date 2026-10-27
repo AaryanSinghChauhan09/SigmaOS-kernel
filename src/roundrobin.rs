@@ -1,7 +1,7 @@
 // SigmaOS Round-Robin Scheduler
 // Enhanced priority-aware round-robin with process yielding and context tracking
 
-use crate::scheduler::{Priority, ProcessState, ProcessTask};
+use crate::scheduler::{ProcessState, ProcessTask};
 use std::string::String;
 use std::vec::Vec;
 
@@ -252,7 +252,7 @@ impl RoundRobinScheduler {
         let mut highest_prio = 0u8;
         for entry in &self.processes {
             let is_affinity_matched = (entry.cpu_affinity & (1 << cpu_id)) != 0;
-            if entry.process.state == ProcessState::Ready && is_affinity_matched {
+            if entry.process.state == ProcessState::READY && is_affinity_matched {
                 if entry.posix_rt_priority > highest_prio {
                     highest_prio = entry.posix_rt_priority;
                 }
@@ -268,7 +268,7 @@ impl RoundRobinScheduler {
         loop {
             let entry = &self.processes[self.current_index];
             let is_affinity_matched = (entry.cpu_affinity & (1 << cpu_id)) != 0;
-            if entry.process.state == ProcessState::Ready
+            if entry.process.state == ProcessState::READY
                 && is_affinity_matched
                 && entry.posix_rt_priority == highest_prio
             {
@@ -317,7 +317,7 @@ impl RoundRobinScheduler {
         for entry in &mut self.processes {
             let matches_source = (entry.cpu_affinity & (1 << source_cpu)) != 0;
             let matches_target = (entry.cpu_affinity & (1 << target_cpu)) != 0;
-            if entry.process.state == ProcessState::Ready && matches_source && matches_target {
+            if entry.process.state == ProcessState::READY && matches_source && matches_target {
                 // Re-pin process to target CPU
                 entry.cpu_affinity = 1 << target_cpu;
                 return true;
@@ -381,7 +381,7 @@ impl RoundRobinScheduler {
         let start = self.current_index;
         loop {
             self.current_index = (self.current_index + 1) % self.processes.len();
-            if self.processes[self.current_index].process.state == ProcessState::Ready {
+            if self.processes[self.current_index].process.state == ProcessState::READY {
                 break;
             }
             if self.current_index == start {
@@ -418,7 +418,7 @@ impl RoundRobinScheduler {
     pub fn get_ready_process_count(&self) -> usize {
         self.processes
             .iter()
-            .filter(|e| e.process.state == ProcessState::Ready)
+            .filter(|e| e.process.state == ProcessState::READY)
             .count()
     }
 
@@ -532,7 +532,7 @@ impl SovereignMultiQueueRoundRobin {
         if let Some(pos) = self
             .realtime_queue
             .iter()
-            .position(|t| t.cpu_id == cpu_id && t.state == ProcessState::Ready)
+            .position(|t| t.cpu_id == cpu_id && t.state == ProcessState::READY)
         {
             let task = self.realtime_queue.remove(pos);
             if task.policy == SchedPolicy::SchedRr {
@@ -548,7 +548,7 @@ impl SovereignMultiQueueRoundRobin {
         if let Some(pos) = self
             .high_queue
             .iter()
-            .position(|t| t.cpu_id == cpu_id && t.state == ProcessState::Ready)
+            .position(|t| t.cpu_id == cpu_id && t.state == ProcessState::READY)
         {
             let task = self.high_queue.remove(pos);
             let queued = task.clone();
@@ -560,7 +560,7 @@ impl SovereignMultiQueueRoundRobin {
         if let Some(pos) = self
             .normal_queue
             .iter()
-            .position(|t| t.cpu_id == cpu_id && t.state == ProcessState::Ready)
+            .position(|t| t.cpu_id == cpu_id && t.state == ProcessState::READY)
         {
             let task = self.normal_queue.remove(pos);
             let queued = task.clone();
@@ -572,7 +572,7 @@ impl SovereignMultiQueueRoundRobin {
         if let Some(pos) = self
             .idle_queue
             .iter()
-            .position(|t| t.cpu_id == cpu_id && t.state == ProcessState::Ready)
+            .position(|t| t.cpu_id == cpu_id && t.state == ProcessState::READY)
         {
             let task = self.idle_queue.remove(pos);
             let queued = task.clone();
@@ -597,7 +597,7 @@ impl SovereignMultiQueueRoundRobin {
                     }
                     if task.time_slice_remaining_ms == 0 {
                         task.time_slice_remaining_ms = task.rr_time_slice_ms;
-                        task.state = ProcessState::Ready;
+                        task.state = ProcessState::READY;
                     }
                 }
             }
@@ -620,9 +620,10 @@ pub enum SchedulerError {
 }
 
 #[cfg(test)]
-#[cfg(test_disabled)]
 mod tests {
     use super::*;
+    use crate::process::Process;
+    use crate::scheduler::Priority;
     use std::string::ToString;
 
     #[test]
@@ -797,7 +798,7 @@ mod tests {
             rr_time_slice_ms: 5,
             time_slice_remaining_ms: 5,
             cpu_id: 0,
-            state: ProcessState::Ready,
+            state: ProcessState::READY,
         };
 
         let normal_task = MultiQueueTask {
@@ -808,7 +809,7 @@ mod tests {
             rr_time_slice_ms: 20,
             time_slice_remaining_ms: 20,
             cpu_id: 0,
-            state: ProcessState::Ready,
+            state: ProcessState::READY,
         };
 
         mq_rr.enqueue_task(rt_task);
@@ -871,7 +872,7 @@ mod tests {
             rr_time_slice_ms: 10,
             time_slice_remaining_ms: 10,
             cpu_id: 0,
-            state: ProcessState::Ready,
+            state: ProcessState::READY,
         };
         mq_rr.enqueue_task(normal_task);
         assert_eq!(mq_rr.normal_queue.len(), 1);

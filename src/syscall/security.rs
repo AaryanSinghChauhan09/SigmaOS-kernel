@@ -54,7 +54,7 @@ impl PledgeState {
     /// Add promises to the pledge state
     pub fn add_promises(&mut self, promises: &[PledgePromise]) {
         for promise in promises {
-            if !self.promises.contains(&promise) {
+            if !self.promises.contains(promise) {
                 self.promises.push(*promise);
             }
         }
