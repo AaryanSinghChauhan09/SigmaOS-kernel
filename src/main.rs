@@ -9,10 +9,10 @@ use core::sync::atomic::{AtomicUsize, Ordering};
 use std::string::ToString;
 
 // Use library modules
+use sigmaos_kernel::memory::sigma_buddy::SigmaBuddyAllocator as MemoryAllocator;
+use sigmaos_kernel::roundrobin::RoundRobinScheduler as Scheduler;
 use sigmaos_kernel::scheduler::ProcessState as TaskProcessState;
 use sigmaos_kernel::scheduler::{Priority, ProcessTask, SchedulerPolicy};
-use sigmaos_kernel::roundrobin::RoundRobinScheduler as Scheduler;
-use sigmaos_kernel::memory::sigma_buddy::SigmaBuddyAllocator as MemoryAllocator;
 
 pub static EARLY_CPU_STATE: core::sync::atomic::AtomicUsize = AtomicUsize::new(0);
 

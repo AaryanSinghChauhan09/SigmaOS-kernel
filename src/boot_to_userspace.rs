@@ -694,7 +694,10 @@ impl Ring3TransitionManager {
     }
 
     /// Prepare user-space memory mapping for Ring 3 transition
-    pub fn prepare_user_memory(&self, mem_mgr: &mut AddressSpaceSeparationManager) -> Result<(), &'static str> {
+    pub fn prepare_user_memory(
+        &self,
+        mem_mgr: &mut AddressSpaceSeparationManager,
+    ) -> Result<(), &'static str> {
         // Map user stack as user-accessible
         for offset in (0..self.user_stack_size).step_by(4096) {
             let vaddr = self.user_stack_base + offset;
@@ -717,21 +720,21 @@ impl Ring3TransitionManager {
         }
 
         // Use the TSS module to perform the transition
-        use crate::tss_ring3_user_mode::{SovereignRing3UserModeEngine, SecuritySandboxLevel};
+        use crate::tss_ring3_user_mode::{SecuritySandboxLevel, SovereignRing3UserModeEngine};
 
         // Create engine
         let mut engine = SovereignRing3UserModeEngine::new();
 
         // Register user process with all required parameters
         engine.register_user_process(
-            1,              // PID
-            0,              // PPID (0 for init)
-            0,              // user_cr3 (page table, 0 for now)
-            0,              // kernel_cr3 (page table, 0 for now)
-            0,              // kernel_stack (0 for now)
+            1,                                           // PID
+            0,                                           // PPID (0 for init)
+            0,                                           // user_cr3 (page table, 0 for now)
+            0,                                           // kernel_cr3 (page table, 0 for now)
+            0,                                           // kernel_stack (0 for now)
             self.user_stack_base + self.user_stack_size, // user_stack
-            self.entry_point, // entry point
-            SecuritySandboxLevel::None, // security level
+            self.entry_point,                            // entry point
+            SecuritySandboxLevel::None,                  // security level
         );
 
         // Prepare ring 3 transition
