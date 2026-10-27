@@ -264,11 +264,13 @@ pub fn init_timekeeping() {
 }
 
 /// Get global timekeeper
+#[allow(static_mut_refs)]
 pub fn get_timekeeper() -> Option<&'static mut Timekeeper> {
     unsafe { TIMEKEEPER.as_mut() }
 }
 
 /// Get global timer manager
+#[allow(static_mut_refs)]
 pub fn get_timer_manager() -> Option<&'static mut TimerManager> {
     unsafe { TIMER_MANAGER.as_mut() }
 }

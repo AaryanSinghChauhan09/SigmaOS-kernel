@@ -635,7 +635,7 @@ mod tests {
     #[test]
     fn test_add_process() {
         let mut scheduler = RoundRobinScheduler::new();
-        let process = Process::new(1, "test".to_string(), Priority::Normal);
+        let process = ProcessTask::new_simple(1, Priority::NORMAL);
         assert!(scheduler.add_process(process).is_ok());
         assert_eq!(scheduler.get_process_count(), 1);
     }
@@ -643,7 +643,7 @@ mod tests {
     #[test]
     fn test_schedule() {
         let mut scheduler = RoundRobinScheduler::new();
-        let process = Process::new(1, "test".to_string(), Priority::Normal);
+        let process = ProcessTask::new_simple(1, Priority::NORMAL);
         scheduler.add_process(process).unwrap();
         assert!(scheduler.schedule().is_some());
     }
@@ -651,8 +651,8 @@ mod tests {
     #[test]
     fn test_tick_switches_process() {
         let mut scheduler = RoundRobinScheduler::new();
-        let p1 = Process::new(1, "test1".to_string(), Priority::Normal);
-        let p2 = Process::new(2, "test2".to_string(), Priority::Normal);
+        let p1 = Process::new(1, "test1".to_string(), Priority::NORMAL);
+        let p2 = Process::new(2, "test2".to_string(), Priority::NORMAL);
         scheduler.add_process(p1).unwrap();
         scheduler.add_process(p2).unwrap();
 
@@ -668,7 +668,7 @@ mod tests {
     fn test_yield_current() {
         let mut scheduler = RoundRobinScheduler::new();
         let p1 = Process::new(1, "test1".to_string(), Priority::High);
-        let p2 = Process::new(2, "test2".to_string(), Priority::Normal);
+        let p2 = Process::new(2, "test2".to_string(), Priority::NORMAL);
         scheduler.add_process(p1).unwrap();
         scheduler.add_process(p2).unwrap();
 
@@ -681,7 +681,7 @@ mod tests {
     #[test]
     fn test_context_save_restore() {
         let mut scheduler = RoundRobinScheduler::new();
-        let process = Process::new(1, "test".to_string(), Priority::Normal);
+        let process = ProcessTask::new_simple(1, Priority::NORMAL);
         scheduler.add_process(process).unwrap();
 
         scheduler.save_context(0xDEADBEEF, 0xCAFEBABE);
@@ -693,7 +693,7 @@ mod tests {
     #[test]
     fn test_remove_process() {
         let mut scheduler = RoundRobinScheduler::new();
-        let process = Process::new(1, "test".to_string(), Priority::Normal);
+        let process = ProcessTask::new_simple(1, Priority::NORMAL);
         scheduler.add_process(process).unwrap();
         scheduler.remove_process(1);
         assert_eq!(scheduler.get_process_count(), 0);
@@ -708,21 +708,21 @@ mod tests {
         let mut scheduler = RoundRobinScheduler::with_config(config);
 
         assert!(scheduler
-            .add_process(Process::new(1, "test1".to_string(), Priority::Normal))
+            .add_process(Process::new(1, "test1".to_string(), Priority::NORMAL))
             .is_ok());
         assert!(scheduler
-            .add_process(Process::new(2, "test2".to_string(), Priority::Normal))
+            .add_process(Process::new(2, "test2".to_string(), Priority::NORMAL))
             .is_ok());
         assert!(scheduler
-            .add_process(Process::new(3, "test3".to_string(), Priority::Normal))
+            .add_process(Process::new(3, "test3".to_string(), Priority::NORMAL))
             .is_err());
     }
 
     #[test]
     fn test_cpu_affinity() {
         let mut scheduler = RoundRobinScheduler::new();
-        let p1 = Process::new(1, "cpu1_only".to_string(), Priority::Normal);
-        let p2 = Process::new(2, "cpu2_only".to_string(), Priority::Normal);
+        let p1 = Process::new(1, "cpu1_only".to_string(), Priority::NORMAL);
+        let p2 = Process::new(2, "cpu2_only".to_string(), Priority::NORMAL);
         scheduler.add_process(p1).unwrap();
         scheduler.add_process(p2).unwrap();
 
@@ -765,7 +765,7 @@ mod tests {
     #[test]
     fn test_interactive_boosting() {
         let mut scheduler = RoundRobinScheduler::new();
-        let p1 = Process::new(1, "sleeper_interactive".to_string(), Priority::Normal);
+        let p1 = Process::new(1, "sleeper_interactive".to_string(), Priority::NORMAL);
         scheduler.add_process(p1).unwrap();
 
         // Voluntarily yield boosts interactive score
@@ -827,7 +827,7 @@ mod tests {
     #[test]
     fn test_dynamic_time_slice_scaling() {
         let mut scheduler = RoundRobinScheduler::new();
-        let p1 = Process::new(1, "task1".to_string(), Priority::Normal);
+        let p1 = Process::new(1, "task1".to_string(), Priority::NORMAL);
         scheduler.add_process(p1).unwrap();
 
         // Single process ready -> base slice
@@ -835,13 +835,13 @@ mod tests {
 
         // Add 3 more processes -> ready count = 4
         scheduler
-            .add_process(Process::new(2, "task2".to_string(), Priority::Normal))
+            .add_process(Process::new(2, "task2".to_string(), Priority::NORMAL))
             .unwrap();
         scheduler
-            .add_process(Process::new(3, "task3".to_string(), Priority::Normal))
+            .add_process(Process::new(3, "task3".to_string(), Priority::NORMAL))
             .unwrap();
         scheduler
-            .add_process(Process::new(4, "task4".to_string(), Priority::Normal))
+            .add_process(Process::new(4, "task4".to_string(), Priority::NORMAL))
             .unwrap();
 
         // 4 ready tasks -> target_latency (40) / 4 = 10
@@ -850,7 +850,7 @@ mod tests {
 
     #[test]
     fn test_ule_interactivity_score_and_quantum() {
-        let mut process = Process::new(1, "interactive_gui".to_string(), Priority::Normal);
+        let mut process = Process::new(1, "interactive_gui".to_string(), Priority::NORMAL);
         let mut scheduled = ScheduledProcess::new(process);
         scheduled.sleep_time_ms = 90;
         scheduled.run_time_ms = 10;
