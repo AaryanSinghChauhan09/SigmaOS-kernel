@@ -15,3 +15,7 @@ cargo check
 
 See the central [SigmaOS repository](https://github.com/AaryanSinghChauhan09/SigmaOS)
 for integration status and system-wide development policy.
+
+The included Secure Boot verification model has no cryptographic backend; it
+reports signed inputs as `VerifierUnavailable` and must not be used as a trust
+boundary.
