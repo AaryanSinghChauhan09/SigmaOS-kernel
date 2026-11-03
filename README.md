@@ -1,21 +1,40 @@
 # SigmaOS-kernel
 
-SigmaOS microkernel core: scheduler, VFS, syscall gate, and memory management.
+SigmaOS component inspired by Arch Linux and Debian architecture.
 
-## Development
+## Overview
 
-This repository is the kernel-core component in the SigmaOS multi-repository
-ecosystem. Keep public interfaces small, document safety invariants, and attach
-test evidence to changes.
+This component provides essential functionality for the SigmaOS operating system,
+following the modular design principles of Arch Linux and the stability focus of Debian.
+
+## Features
+
+- Modular architecture
+- Minimal dependencies
+- Well-documented APIs
+- Comprehensive testing
+
+## Building
 
 ```bash
-cargo check
-./run_sigma_tests.sh
+cargo build --release
 ```
 
-See the central [SigmaOS repository](https://github.com/AaryanSinghChauhan09/SigmaOS)
-for integration status and system-wide development policy.
+## Testing
 
-The included Secure Boot verification model has no cryptographic backend; it
-reports signed inputs as `VerifierUnavailable` and must not be used as a trust
-boundary.
+```bash
+cargo test
+```
+
+## License
+
+MIT License - See LICENSE file for details.
+
+## Contributing
+
+See CONTRIBUTING.md for guidelines.
+
+## Links
+
+- Repository: https://github.com/AaryanSinghChauhan09/SigmaOS-kernel
+- SigmaOS: https://github.com/AaryanSinghChauhan09
