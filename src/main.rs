@@ -1,16 +1,13 @@
-//! SigmaOS-kernel - SigmaOS Component
-//!
-//! This component is part of the SigmaOS operating system,
-//! inspired by Arch Linux and Debian architecture.
+use clap::Parser;
+use kernel::kernel;
 
-use std::process;
+#[derive(Parser)]
+struct Cli;
 
-fn main() {
-    println!("SigmaOS SigmaOS-kernel");
-    println!("Version: 0.1.0");
-    println!("Inspired by: Arch Linux and Debian");
-    println!();
-    println!("This component provides essential functionality for SigmaOS.");
-    println!("Following modular design principles from Arch Linux");
-    println!("and stability focus from Debian.");
+fn main() -> anyhow::Result<()> {
+    let config = kernel::Config::default();
+    let mut component = kernel::new(config);
+    component.initialize()?;
+    println!("SigmaOS-kernel ready");
+    Ok(())
 }

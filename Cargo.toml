@@ -1,34 +1,14 @@
 [package]
-name = "sigmaos-kernel"
+name = "kernel"
 version = "0.1.0"
 edition = "2021"
-authors = ["SigmaOS Project"]
-description = "SigmaOS SigmaOS-kernel component - Inspired by Arch Linux and Debian"
-license = "GPL-3.0-or-later"
+description = "SigmaOS SigmaOS-kernel"
+license = "MIT"
 repository = "https://github.com/AaryanSinghChauhan09/SigmaOS-kernel"
-readme = "README.md"
-keywords = ["kernel", "os", "sigmaos", "x86_64", "aarch64"]
-categories = ["os", "no-std"]
 
 [dependencies]
-# Core dependencies (MINIMAL DEPENDENCIES, YAGNI)
-spin = "0.9"
-volatile = "0.5"
-sigmaos-klib = { path = "../SigmaOS-klib" }
-
-[features]
-default = ["std"]
-std = []
-no_std = []
-standalone_test = []
-custom_alloc_error_handler = []
-
-[profile.dev]
-opt-level = 0
-debug = true
-
-[profile.release]
-opt-level = 3
-lto = true
-codegen-units = 1
-panic = "abort"
+tokio = { version = "1.35", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+log = "0.4"
+anyhow = "1.0"
+clap = { version = "4.5", features = ["derive"] }
