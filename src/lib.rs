@@ -1,16 +1,13 @@
-use anyhow::Result;
-use serde::Serialize;
+//! SigmaOS-kernel - Core Kernel Component for SigmaOS
+#![allow(dead_code)]
 
-#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
-pub struct Config {
-    pub enabled: bool,
-}
+pub mod config;
+pub mod error;
+pub mod service;
 
-impl Default for Config {
-    fn default() -> Self {
-        Self { enabled: true }
-    }
-}
+pub use config::Config;
+pub use error::{ComponentError, Result};
+pub use service::Service;
 
 /// Core Kernel abstraction for SigmaOS.
 /// Follows Minimal Kernel Philosophy and Clear Abstraction principles.
@@ -18,8 +15,6 @@ impl Default for Config {
 pub struct Kernel {
     pub config: Config,
 }
-
-pub type kernel = Kernel;
 
 impl Kernel {
     pub fn new(config: Config) -> Self {
@@ -49,7 +44,8 @@ mod tests {
 
     #[test]
     fn test_kernel_custom_config() {
-        let config = Config { enabled: false };
+        let mut config = Config::default();
+        config.enabled = false;
         let k = Kernel::new(config);
         assert!(!k.is_enabled());
     }
