@@ -1,52 +1,32 @@
-//! SigmaOS-kernel - Core Kernel Component for SigmaOS
-#![allow(dead_code)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum KernelState { Booting, Initialized, Halting, Panic }
 
-pub mod config;
-pub mod error;
-pub mod service;
-
-pub use config::Config;
-pub use error::{ComponentError, Result};
-pub use service::Service;
-
-/// Core Kernel abstraction for SigmaOS.
-/// Follows Minimal Kernel Philosophy and Clear Abstraction principles.
 #[derive(Debug)]
-pub struct Kernel {
-    pub config: Config,
+pub struct KernelInstance {
+    pub state: KernelState,
+    pub uptime_ticks: u64,
 }
 
-impl Kernel {
-    pub fn new(config: Config) -> Self {
-        Self { config }
+impl Default for KernelInstance {
+    fn default() -> Self {
+        Self { state: KernelState::Initialized, uptime_ticks: 0 }
     }
+}
 
-    pub fn initialize(&mut self) -> Result<()> {
-        Ok(())
-    }
-
-    pub fn is_enabled(&self) -> bool {
-        self.config.enabled
-    }
+impl KernelInstance {
+    pub fn new() -> Self { Self::default() }
+    pub fn tick(&mut self) { self.uptime_ticks += 1; }
+    pub fn is_operational(&self) -> bool { self.state == KernelState::Initialized }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-
     #[test]
-    fn test_kernel_default_initialization() {
-        let config = Config::default();
-        let mut k = Kernel::new(config);
-        assert!(k.is_enabled());
-        assert!(k.initialize().is_ok());
-    }
-
-    #[test]
-    fn test_kernel_custom_config() {
-        let mut config = Config::default();
-        config.enabled = false;
-        let k = Kernel::new(config);
-        assert!(!k.is_enabled());
+    fn test_kernel_instance_lifecycle() {
+        let mut k = KernelInstance::new();
+        assert!(k.is_operational());
+        k.tick();
+        assert_eq!(k.uptime_ticks, 1);
     }
 }
