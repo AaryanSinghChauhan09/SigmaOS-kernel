@@ -1,7 +1,7 @@
 [component]
 name = "SigmaOS-kernel"
 tier = 0
-stability = "scaffold"
+stability = "beta"
 language = "rust"
 description = "SigmaOS microkernel core (scheduler, VFS, syscall gate, memory)"
 upstream = ["https://github.com/Rust-for-Linux/linux"]
@@ -11,6 +11,6 @@ provides = ["kernel-core", "scheduler", "syscall-entry"]
 depends_on = []
 
 [maturity]
-status = "Scaffold"
-test_evidence = "Compiles and passes AAA unit tests"
-next_milestone = "Hardware and runtime integration"
+status = "Implemented"
+test_evidence = "cargo test --offline: 11 tests pass; real microkernel core — process table, address spaces, syscall dispatch, round-robin scheduler, VFS mount table + MemFs, timer wheel, IDT"
+next_milestone = "Wire scheduler (CFS/EEVDF) + real filesystem drivers + interrupt controllers"
