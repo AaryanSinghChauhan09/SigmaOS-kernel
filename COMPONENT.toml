@@ -3,7 +3,7 @@ name = "SigmaOS-kernel"
 tier = 0
 stability = "scaffold"
 language = "rust"
-description = "Sovereign Rust microkernel core implementing thread scheduling, IPC primitives, and syscall dispatch"
+description = "SigmaOS microkernel core (scheduler, VFS, syscall gate, memory)"
 upstream = ["https://github.com/Rust-for-Linux/linux"]
 
 [contract]
