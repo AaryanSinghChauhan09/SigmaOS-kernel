@@ -7,3 +7,9 @@ description = "Sovereign Rust microkernel core implementing thread scheduling, I
 [lib]
 name = "sigmaos_kernel"
 path = "src/lib.rs"
+
+[dependencies]
+thiserror = "2"
+uuid = { version = "1", features = ["v4"] }
+libc = "0.2"
+ed25519-dalek = { version = "2", features = ["rand_core"] }
